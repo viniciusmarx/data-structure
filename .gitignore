@@ -1,0 +1,10 @@
+# Arquivos de compilação
+*.o
+*.obj
+*.so
+*.a
+*.out
+*.exe
+
+output/
+.vscode/
