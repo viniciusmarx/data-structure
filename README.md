@@ -11,6 +11,12 @@ Este é um sistema simples em linguagem C para gerenciamento de turmas, alunos e
 -   ✅ Listar alunos de uma turma
 -   ✅ Criar grupos a partir dos alunos cadastrados em uma turma
 -   ✅ Listar grupos criados
+-   ✅ Incluir aluno em um grupo de uma turma
+-   ✅ Remover aluno de um grupo de uma turma
+-   ✅ Consultar alunos de grupos de uma turma
+-   ✅ Listar alunos sem grupo em uma turma
+-   ✅ Listar alunos que estão em mais de uma turma
+-   ✅ Listar alunos que estão em apenas uma turma
 
 ## Como funciona
 
@@ -45,6 +51,32 @@ Este é um sistema simples em linguagem C para gerenciamento de turmas, alunos e
 7. **Listagem de Grupos**
 
     - Exibe todos os grupos formados dentro de uma turma, junto com os nomes dos alunos de cada grupo.
+
+8. **Incluir Aluno em um Grupo**
+
+    - O usuário informa o código da turma, o código do grupo e o código do aluno.
+    - O aluno é adicionado ao grupo especificado dentro da turma.
+
+9. **Remover Aluno de um Grupo**
+
+    - O usuário informa o código da turma, o código do grupo e o código do aluno.
+    - O aluno é removido do grupo especificado dentro da turma.
+
+10. **Consultar Alunos dos Grupos**
+
+    - Exibe todos os alunos de todos os grupos dentro de uma turma.
+
+11. **Listar Alunos sem Grupo**
+
+    - Exibe os alunos de uma turma que não estão alocados a nenhum grupo.
+
+12. **Listar Alunos em Mais de Uma Turma**
+
+    - Exibe os alunos que estão matriculados em mais de uma turma.
+
+13. **Listar Alunos em Apenas Uma Turma**
+
+    - Exibe os alunos que estão matriculados em apenas uma turma.
 
 ## Estrutura de Dados
 
