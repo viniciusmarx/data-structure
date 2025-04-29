@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TURMAS 10
-
 struct aluno{
   int codigo;
   char nome[50];
@@ -69,6 +67,18 @@ void remover_grupos(GRUPO* inicio){
   }
 }
 
+TURMA* retorna_turma(int codigo_turma){
+  
+  TURMA* turma = NULL;
+  for(int i=0; i<total_turmas; i++){
+    if(turmas[i].codigo == codigo_turma){
+      turma = &turmas[i];
+      break;
+    }
+  }
+  return turma;
+}
+
 void remover_turma(int codigo){
   for(int i=0; i<total_turmas; i++){
     if(turmas[i].codigo == codigo){
@@ -112,41 +122,45 @@ void consultar_turmas(){
 
 void incluir_aluno(int codigo_turma, int codigo_aluno, char* nome){
 
-  for(int i=0; i<total_turmas; i++){
-
-    if(turmas[i].codigo == codigo_turma){
-
-      ALUNO* novo_aluno = (ALUNO*)malloc(sizeof(ALUNO));
-
-      if(!novo_aluno){
-        printf("Erro ao alocar memoria para o aluno\n");
-        return;
-      }
-
-      novo_aluno->codigo = codigo_aluno;
-      strcpy(novo_aluno->nome, nome);
-      novo_aluno->prox = NULL;
-      novo_aluno->ant = NULL;
-
-      if(turmas[i].inicio_alunos == NULL){
-        turmas[i].inicio_alunos = novo_aluno;
-      } else{
-          ALUNO* alunos = turmas[i].inicio_alunos;
-
-          while(alunos->prox != NULL){
-            alunos = alunos->prox;
-          }
-          alunos->prox = novo_aluno;
-          novo_aluno->ant = alunos;
-      }
-
-      printf("Aluno %s (codigo: %d) adicionado a turma %d\n", nome, codigo_aluno, codigo_turma);
-      return;
-    }
+  TURMA* turma = retorna_turma(codigo_turma);
+  if(!turma){
+    printf("Erro: Turma com codigo %d nao encontrada\n", codigo_turma);
+    return;
   }
 
-  printf("Erro: Turma com codigo %d nao encontrada\n", codigo_turma);
-  return;
+  ALUNO* aluno = turma->inicio_alunos;
+  while(aluno != NULL){
+    if(aluno->codigo == codigo_aluno){
+      printf("Codigo de aluno %d ja existe na turma %d\n", codigo_aluno, codigo_turma);
+      return;
+    }
+    aluno = aluno->prox;
+  }
+
+  ALUNO* novo_aluno = (ALUNO*)malloc(sizeof(ALUNO));
+    
+  if(!novo_aluno){
+    printf("Erro ao alocar memoria para o aluno\n");
+    return;
+  }
+
+  novo_aluno->codigo = codigo_aluno;
+  strcpy(novo_aluno->nome, nome);
+  novo_aluno->prox = NULL;
+  novo_aluno->ant = NULL;
+
+  if(turma->inicio_alunos == NULL){
+    turma->inicio_alunos = novo_aluno;
+  } else{
+    ALUNO* alunos = turma->inicio_alunos;
+    while(alunos->prox != NULL){
+      alunos = alunos->prox;
+    }
+    alunos->prox = novo_aluno;
+    novo_aluno->ant = alunos;
+  }
+
+  printf("Aluno %s (codigo: %d) adicionado a turma %d\n", nome, codigo_aluno, codigo_turma);
 }
 
 void remover_aluno_turma(TURMA* turma, int codigo_aluno){
@@ -239,13 +253,7 @@ void consultar_alunos(int codigo_turma){
 
 void criar_grupo(int codigo_turma, int codigo_grupo){
 
-  TURMA* turma = NULL;
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -300,13 +308,7 @@ void remover_alunos_grupo(GRUPO* grupo){
 
 void remover_grupo(int codigo_turma, int codigo_grupo){
 
-  TURMA* turma = NULL;
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -339,13 +341,7 @@ void remover_grupo(int codigo_turma, int codigo_grupo){
 
 void consultar_grupos(int codigo_turma){
 
-  TURMA* turma = NULL;
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -366,14 +362,7 @@ void consultar_grupos(int codigo_turma){
 
 void incluir_aluno_grupo(int codigo_turma, int codigo_grupo, int codigo_aluno){
 
-  TURMA* turma = NULL;
-
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -440,13 +429,7 @@ void incluir_aluno_grupo(int codigo_turma, int codigo_grupo, int codigo_aluno){
 
 void remover_aluno_do_grupo(int codigo_turma, int codigo_grupo, int codigo_aluno){
 
-  TURMA* turma = NULL;
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -493,14 +476,7 @@ void remover_aluno_do_grupo(int codigo_turma, int codigo_grupo, int codigo_aluno
 
 void consultar_alunos_grupos(int codigo_turma){
 
-  TURMA* turma = NULL;
-
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -531,13 +507,8 @@ void consultar_alunos_grupos(int codigo_turma){
 
 void listar_alunos_sem_grupo(int codigo_turma){
 
-  TURMA* turma = NULL;
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      turma = &turmas[i];
-      break;
-    }
-  }
+  TURMA* turma = retorna_turma(codigo_turma);
+  
   if(!turma){
     printf("Turma com codigo %d nao encontrada\n", codigo_turma);
     return;
@@ -648,25 +619,24 @@ int main(){
   criar_turma(10);
   criar_turma(20);
   criar_turma(30);
-  incluir_aluno(10, 1, "gio macaco");
-  incluir_aluno(10, 2, "vini marx");
-  incluir_aluno(10, 3, "samuel brustolas");
-  incluir_aluno(10, 4, "timothee chalamet");
-  incluir_aluno(20, 5, "charlie TPOBAW");
-  incluir_aluno(20, 6, "william lee");
-  incluir_aluno(20, 7, "Ada Lovelace");
-  incluir_aluno(20, 8, "tralaleros tralala");
-  incluir_aluno(20, 9, "bombardilo crocodilo");
-  incluir_aluno(20, 10, "tumtumtumtum sahur");
+  incluir_aluno(10, 10, "vinicius");
+  incluir_aluno(10, 20, "vicenzo");
+  incluir_aluno(10, 30, "lucas");
+  incluir_aluno(10, 40, "samuel");
+  incluir_aluno(20, 50, "giovani");
+  incluir_aluno(20, 60, "gustavo");
+  incluir_aluno(20, 70, "denis");
+  incluir_aluno(20, 80, "marina");
+  incluir_aluno(20, 90, "caroline");
   criar_grupo(10, 100);
   criar_grupo(20, 200);
-  incluir_aluno_grupo(10, 100, 1);
-  incluir_aluno_grupo(10, 100, 2);
-  incluir_aluno_grupo(10, 100, 3);
-  incluir_aluno_grupo(10, 100, 4);
-  incluir_aluno_grupo(20, 200, 5);
-  incluir_aluno_grupo(20, 200, 6);
-  incluir_aluno_grupo(20, 200, 7);
+  incluir_aluno_grupo(10, 100, 10);
+  incluir_aluno_grupo(10, 100, 20);
+  incluir_aluno_grupo(10, 100, 30);
+  incluir_aluno_grupo(10, 100, 40);
+  incluir_aluno_grupo(20, 200, 50);
+  incluir_aluno_grupo(20, 200, 60);
+  incluir_aluno_grupo(20, 200, 70);
 
   while(opcao != -1){
     printf("\n");
@@ -806,6 +776,10 @@ int main(){
 
       case 15:
         apenas_uma_turma();
+        break;
+
+      case -1:
+        printf("Finalizando aplicacao...");
         break;
 
       default:
