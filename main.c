@@ -658,6 +658,7 @@ int main(){
     printf("-1 para sair\n");
     printf("Escolha uma opcao:");
     scanf("%d", &opcao);
+    printf("\n");
 
     switch (opcao){
       case 1:
