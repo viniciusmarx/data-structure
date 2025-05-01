@@ -11,7 +11,6 @@ struct aluno{
 
 struct grupo{
   int codigo_grupo;
-  int codigo_turma;
   ALUNO* inicio_alunos;
   struct grupo* prox;
   struct grupo* ant;
@@ -19,7 +18,7 @@ struct grupo{
 
 struct turma{
   int codigo;
-  struct aluno* inicio_alunos;
+  ALUNO* inicio_alunos;
   struct grupo* inicio_grupos;
 }; typedef struct turma TURMA;
 
@@ -47,6 +46,19 @@ void criar_turma(int codigo){
   return;
 }
 
+void remover_alunos_grupo(GRUPO* grupo){
+
+  ALUNO* aluno_atual = grupo->inicio_alunos;
+  while(aluno_atual != NULL){
+    ALUNO* aluno_remover = aluno_atual;
+    aluno_atual = aluno_atual->prox;
+
+    free(aluno_remover);
+  }
+
+  grupo->inicio_alunos = NULL;
+}
+
 void remover_alunos(ALUNO* inicio){
   ALUNO* aux;
 
@@ -63,6 +75,7 @@ void remover_grupos(GRUPO* inicio){
   while(inicio != NULL){
     aux = inicio;
     inicio = inicio->prox;
+    remover_alunos_grupo(aux);
     free(aux);
   }
 }
@@ -109,7 +122,7 @@ void consultar_turmas(){
   int turma_encontrada = 0;
 
   for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo != 0){
+    if(turmas[i].codigo){
       turma_encontrada = 1;
       printf("Turma Codigo: %d\n", turmas[i].codigo);
     }
@@ -216,18 +229,35 @@ void remover_aluno_grupo(TURMA* turma, int codigo_aluno){
 
 void remover_aluno(int codigo_turma, int codigo_aluno){
 
-  for(int i=0; i<total_turmas; i++){
-    if(turmas[i].codigo == codigo_turma){
-      remover_aluno_grupo(&turmas[i], codigo_aluno);
-
-      remover_aluno_turma(&turmas[i], codigo_aluno);
-
-      printf("Aluno de codigo %d removido da turma %d", codigo_aluno, codigo_turma);
-      return;
-    }
+  TURMA* turma = retorna_turma(codigo_turma);
+  if(!turma){
+    printf("Erro: Turma com codigo %d nao encontrada\n", codigo_turma);
+    return;
   }
 
-  printf("Erro: Turma com codigo %d nao encontrada\n", codigo_turma);
+  ALUNO* aluno = turma->inicio_alunos;
+  if(aluno == NULL){
+    printf("Nenhum aluno cadastrado na turma %d\n", codigo_turma);
+    return;
+  }
+  int encontrou = 0;
+  while(aluno != NULL){
+    if(aluno->codigo == codigo_aluno){
+      encontrou = 1;
+      break;
+    }
+    aluno = aluno->prox;
+  }
+
+  if(encontrou){
+    remover_aluno_grupo(turma, codigo_aluno);
+
+    remover_aluno_turma(turma, codigo_aluno);
+
+    printf("Aluno de codigo %d removido da turma %d", codigo_aluno, codigo_turma);
+  } else{
+    printf("Erro: Aluno com codigo %d nao encontrado na turma %d\n", codigo_aluno, codigo_turma);
+  }
 }
 
 void consultar_alunos(int codigo_turma){
@@ -273,7 +303,6 @@ void criar_grupo(int codigo_turma, int codigo_grupo){
   }
 
   novo_grupo->codigo_grupo = codigo_grupo;
-  novo_grupo->codigo_turma = codigo_turma;
   novo_grupo->inicio_alunos = NULL;
   novo_grupo->prox = NULL;
   novo_grupo->ant = NULL;
@@ -291,19 +320,6 @@ void criar_grupo(int codigo_turma, int codigo_grupo){
 
   printf("Grupo com codigo %d criado na turma %d\n", codigo_grupo, codigo_turma);
   return;
-}
-
-void remover_alunos_grupo(GRUPO* grupo){
-
-  ALUNO* aluno_atual = grupo->inicio_alunos;
-  while(aluno_atual != NULL){
-    ALUNO* aluno_remover = aluno_atual;
-    aluno_atual = aluno_atual->prox;
-
-    free(aluno_remover);
-  }
-
-  grupo->inicio_alunos = NULL;
 }
 
 void remover_grupo(int codigo_turma, int codigo_grupo){
@@ -536,7 +552,9 @@ void listar_alunos_sem_grupo(int codigo_turma){
         }
         aluno_grupo = aluno_grupo->prox;
       }
-      if(tem_grupo) break;
+      if(tem_grupo) {
+        break;
+      }
       grupo_atual = grupo_atual->prox;
     }
     if(!tem_grupo){
@@ -639,7 +657,7 @@ int main(){
   incluir_aluno_grupo(20, 200, 70);
 
   while(opcao != -1){
-    printf("\n");
+    printf("\n\n");
     printf("1 incluir nova turma\n");
     printf("2 remover uma turma\n");
     printf("3 consultar todas as turmas\n");
